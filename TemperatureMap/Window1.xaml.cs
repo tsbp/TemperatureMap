@@ -98,19 +98,20 @@ namespace TemperatureMap
 		//==================================================================
 		void  CreateBeam()
 		{
-			gridCol[beamCntr] = new ColumnDefinition();
-			//gridCol.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
+			gridCol[beamCntr] = new ColumnDefinition();;
 			stPanel.ColumnDefinitions.Add(gridCol[beamCntr]);		
 			
 			
 			 listBox[beamCntr] = new ListView();
 			 listBox[beamCntr].Name = "lvBeam" + beamCntr;
-             listBox[beamCntr].Margin = new Thickness(10);
+             listBox[beamCntr].Margin = new Thickness(2);
              listBox[beamCntr].HorizontalAlignment = HorizontalAlignment.Stretch;
              listBox[beamCntr].HorizontalContentAlignment = HorizontalAlignment.Stretch;
              listBox[beamCntr].VerticalAlignment = VerticalAlignment.Stretch;
              listBox[beamCntr].AllowDrop = true;
-             listBox[beamCntr].Drop += lbTwo_Drop;             
+             listBox[beamCntr].Drop += lbTwo_Drop;   
+             listBox[beamCntr].BorderThickness = new Thickness(0);
+             listBox[beamCntr].Background = Brushes.SteelBlue;
 
              DataTemplate dt = new DataTemplate();
              Binding bindingID = new Binding();

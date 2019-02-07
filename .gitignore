@@ -76,3 +76,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+TemperatureMap/obj/Debug/Window1.g.i.cs
+TemperatureMap/obj/Debug/Window1.g.i.cs
+TemperatureMap/obj/Debug/Window1.g.cs
+TemperatureMap/bin/Debug/config.json

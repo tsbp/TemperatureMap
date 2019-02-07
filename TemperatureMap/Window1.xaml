@@ -15,12 +15,48 @@
 		
 		<Grid
 			Grid.Column="0"
-			Margin="5,5,5,5"
-			>
+			Margin="5,5,5,5">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="150"></RowDefinition>
+				<RowDefinition Height="200"></RowDefinition>
 				<RowDefinition Height="*"></RowDefinition>
 			</Grid.RowDefinitions>
+			<StackPanel
+				Grid.Row="0">
+				<Button
+					Content="Port"
+					Height="30"
+					Width="Auto"
+					HorizontalAlignment="Stretch"
+					Margin="0,5,0,0"/>
+				<Button
+					Content="Load"
+					Height="30"
+					Width="Auto"
+					HorizontalAlignment="Stretch"
+					Margin="0,5,0,0"
+					x:Name="bChange"
+					Click="bChange_Click" />
+				<Button
+					Content="Save"
+					Height="30"
+					Width="Auto"					
+					HorizontalAlignment="Stretch"
+					Margin="0,5,0,0"
+					x:Name="bJson"
+					Click="bJson_Click" />
+				<Button					
+					Content="Add beam"
+					Height="30"
+					Width="Auto"
+					HorizontalAlignment="Stretch"
+					Margin="0,5,0,0"
+					x:Name="bCreate"
+					Click="bCreate_Click" />
+				<TextBox
+					Name="lb"					
+					VerticalAlignment="Center"
+					Text="123" />
+			</StackPanel>
 			<Border
 				Grid.Row="1"
 				BorderBrush="Red"
@@ -81,11 +117,10 @@
 		
 		<Grid
 			Grid.Column="1"
-			Height="Auto"
-			Width="NaN">
+			>
 			<Grid.RowDefinitions>
 				<RowDefinition
-					Height="100"></RowDefinition>
+					Height="50"></RowDefinition>
 				<RowDefinition
 					Height="*"></RowDefinition>
 			</Grid.RowDefinitions>
@@ -101,44 +136,7 @@
 					<ColumnDefinition
 						Width="*"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
-				<Button
-					Grid.Column="0"
-					Content="JSON"
-					Height="50"
-					Width="100"
-					HorizontalContentAlignment="Center"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Right"
-					Margin="0,0,10,0"
-					x:Name="bJson"
-					Click="bJson_Click" />
-				<Button
-					Grid.Column="1"
-					Content="Create"
-					Height="50"
-					Width="100"
-					HorizontalContentAlignment="Center"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Right"
-					Margin="0,0,10,0"
-					x:Name="bCreate"
-					Click="bCreate_Click" />
-				<Button
-					Grid.Column="2"
-					Content="Change"
-					Height="50"
-					Width="100"
-					HorizontalContentAlignment="Center"
-					VerticalAlignment="Center"
-					HorizontalAlignment="Right"
-					Margin="0,0,10,0"
-					x:Name="bChange"
-					Click="bChange_Click" />
-				<TextBox
-					Name="lb"
-					Grid.Column="3"
-					VerticalAlignment="Center"
-					Text="123" />
+				
 			</Grid>
 			<!--StackPanel
 				Orientation="Horizontal"
