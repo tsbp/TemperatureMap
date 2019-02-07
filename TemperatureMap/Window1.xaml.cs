@@ -43,6 +43,7 @@ namespace TemperatureMap
 		
 		string [] temps = {"123", "123", "123", "123", "123","123", "123", };
 		string [] jsonBeam = new string[MAX_BEAM_COUNT];
+		string [] beamTitle =new string[MAX_BEAM_COUNT];
 		
 		public Window1()
 		{
@@ -93,13 +94,34 @@ namespace TemperatureMap
 			dsItem[2].tvalue = lb.Text;
 		}	
 		//==================================================================
-		ColumnDefinition [] gridCol = new ColumnDefinition[MAX_BEAM_COUNT];
-		RowDefinition [] gridRow = new RowDefinition[MAX_BEAM_COUNT];
+		ColumnDefinition [] gridCol = new ColumnDefinition[MAX_BEAM_COUNT];		
+		ColumnDefinition [] gridColTitle = new ColumnDefinition[MAX_BEAM_COUNT];
+		TextBox [] tbTitle = new TextBox[MAX_BEAM_COUNT];
+		//==================================================================
+		void addTitles()
+		{
+			gridColTitle[beamCntr] = new ColumnDefinition();
+			gTitles.ColumnDefinitions.Add(gridColTitle[beamCntr]);
+			tbTitle[beamCntr] = new TextBox();
+			tbTitle[beamCntr].Text = "qwerty";
+			tbTitle[beamCntr].HorizontalContentAlignment = HorizontalAlignment.Center;
+			tbTitle[beamCntr].VerticalContentAlignment   = VerticalAlignment.Center;
+			tbTitle[beamCntr].BorderThickness = new Thickness(0);
+			tbTitle[beamCntr].Margin = new Thickness(2);
+			tbTitle[beamCntr].Background = Brushes.DarkBlue;
+			tbTitle[beamCntr].FontSize = 15;
+			tbTitle[beamCntr].Foreground = Brushes.WhiteSmoke;
+			//tbTitle[beamCntr].Cor
+			Grid.SetColumn(tbTitle[beamCntr], beamCntr);
+			gTitles.Children.Add(tbTitle[beamCntr]);
+		}
+		
 		//==================================================================
 		void  CreateBeam()
 		{
-			gridCol[beamCntr] = new ColumnDefinition();;
-			stPanel.ColumnDefinitions.Add(gridCol[beamCntr]);		
+			 addTitles();
+			 gridCol[beamCntr] = new ColumnDefinition();;
+			 stPanel.ColumnDefinitions.Add(gridCol[beamCntr]);		
 			
 			
 			 listBox[beamCntr] = new ListView();

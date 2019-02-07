@@ -125,18 +125,8 @@
 					Height="*"></RowDefinition>
 			</Grid.RowDefinitions>
 			<Grid
-				Grid.Row="0">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						Width="*"></ColumnDefinition>
-					<ColumnDefinition
-						Width="*"></ColumnDefinition>
-					<ColumnDefinition
-						Width="*"></ColumnDefinition>
-					<ColumnDefinition
-						Width="*"></ColumnDefinition>
-				</Grid.ColumnDefinitions>
-				
+				Grid.Row="0"
+				Name="gTitles">
 			</Grid>
 			<!--StackPanel
 				Orientation="Horizontal"
