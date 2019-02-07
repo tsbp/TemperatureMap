@@ -1,0 +1,11 @@
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\bin\Debug\TemperatureMap.exe.config
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\bin\Debug\TemperatureMap.exe
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\bin\Debug\TemperatureMap.pdb
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\TemperatureMap.csprojResolveAssemblyReference.cache
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\Window1.baml
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\Window1.g.cs
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\App.g.cs
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\TemperatureMap_MarkupCompile.cache
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\TemperatureMap.g.resources
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\TemperatureMap.exe
+G:\Voodoo\VS2010Projects\TemperatureMap\TemperatureMap\obj\Debug\TemperatureMap.pdb
