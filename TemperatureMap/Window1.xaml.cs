@@ -18,6 +18,10 @@ using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+//using System.Windows;
+using Microsoft.Win32;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace TemperatureMap
 {
@@ -34,29 +38,43 @@ namespace TemperatureMap
 		
 		public static int MAX_BEAM_COUNT = 8;		
 		
-		ObservableCollection<ItemData> dsItem = new ObservableCollection<ItemData>();
-		ObservableCollection<ItemData> [] beam = new ObservableCollection<ItemData>[MAX_BEAM_COUNT];
+		ObservableCollection<ItemData>    dsItem = new ObservableCollection<ItemData>();
+		ObservableCollection<ItemData> [] beam   = new ObservableCollection<ItemData>[MAX_BEAM_COUNT];
 		
 		int beamCntr = 0;
 		Point startPoint;
 		ListView []listBox = new ListView[MAX_BEAM_COUNT];
 		
-		string [] temps = {"123", "123", "123", "123", "123","123", "123", };
+		string [] temps = {"123", "234", "456", "567", "678","789", "890", };
 		string [] jsonBeam = new string[MAX_BEAM_COUNT];
-		string [] beamTitle =new string[MAX_BEAM_COUNT];
+		
+		DispatcherTimer dispatcherTimer;
+		
 		
 		public Window1()
 		{
 			InitializeComponent();
 			
-			 for(int i = 0; i < 5; i++)
-			 	dsItem.Add(new ItemData(i + ".DS", temps[i]));
-			 lvSensorList.ItemsSource = dsItem;				
+//			 for(int i = 0; i < 7; i++)
+//			 	dsItem.Add(new ItemData(i + ".DS", temps[i]));
+//			 lvSensorList.ItemsSource = dsItem;		
+			dispatcherTimer = new DispatcherTimer();
+			dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);//new TimeSpan(0, 0, 1);
+//			dispatcherTimer.Start();			
+		}
+		//==================================================================
+		int tick = 0;
+		//==================================================================
+		void dispatcherTimer_Tick(object sender, EventArgs e)
+		{
+			tick++;
+			for(int i = 0; i < dsItem.Count; i++)
+				dsItem[i].tvalue = "" + (tick + i).ToString();
 		}
 		//==================================================================
 		void bCreate_Click(object sender, RoutedEventArgs e)
 		{			
-			
 			if (beamCntr < MAX_BEAM_COUNT) 
 			{
 				CreateBeam();
@@ -64,13 +82,28 @@ namespace TemperatureMap
 			}
 		}	
 		//==================================================================
+		void bChange_Click(object sender, RoutedEventArgs e)
+		{			
+			dsItem[2].tvalue = lb.Text;
+		}	
+		//==================================================================
 		void bJson_Click(object sender, RoutedEventArgs e)
-		{	
+		{
+			//=========== global ==========================
+			string sensorList = "{\"Name\":\"Global\",\"id\":[\"";
+			for(int i = 0; i < dsItem.Count; i++)
+			{
+				sensorList += dsItem[i].id + "\"";
+				if (i < dsItem.Count - 1) sensorList += ",\"";
+			}
+			sensorList += "]}";
+			//=========== beams ===========================
 			if	(beamCntr > 0)
 			{
 				for(int i = 0; i < beamCntr; i++)
 				{
-					jsonBeam[i] = ( "{\"name" +  "\":\"" + listBox[i].Name + "\",\"id\":[\"" );
+					//jsonBeam[i] = ( "{\"Name"  +  "\":\"" + listBox[i].Name + "\"," );
+					jsonBeam[i] = ( "{\"Title" +  "\":\"" + tbTitle[i].Text + "\",\"id\":[\"" );
 					for(int j = 0; j < beam[i].Count; j++)
 					{
 						jsonBeam[i] += beam[i][j].id + "\"";
@@ -83,27 +116,120 @@ namespace TemperatureMap
 			
 			//------------ save -----------------------
 			StreamWriter sw = new StreamWriter("config.json");
+			sw.WriteLine(sensorList);
 			for(int j = 0; j < beam.Length; j++)
 				sw.WriteLine(jsonBeam[j]);          
             sw.Close();
 		}	
-		
 		//==================================================================
-		void bChange_Click(object sender, RoutedEventArgs e)
+		string cfgString = "";
+		//==================================================================
+		void bLoad_Click(object sender, RoutedEventArgs e)
 		{				
-			dsItem[2].tvalue = lb.Text;
-		}	
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			if(openFileDialog.ShowDialog() == true)
+				cfgString = File.ReadAllText(openFileDialog.FileName);
+			
+			
+			
+			//---- strings count ------
+			int bCntr = 0;
+			for(int i = 0; i < cfgString.Length; i++)
+				if(cfgString[i].Equals('{')) 
+					bCntr++;
+				
+			string [] str = new string[bCntr];
+			for(int i = 0; i < bCntr; i++)
+			{
+				str[i] = cfgString.Substring(0, 1 + cfgString.IndexOf('\n'));
+				cfgString = cfgString.Replace(str[i],"");
+			}
+			//----- parse Global -------
+			string tmp = str[0];
+			string []gIds = idsFromString(str[0]);
+			
+			for(int i = 0; i < gIds.Length; i++)
+				dsItem.Add(new ItemData(gIds[i], "23.8"));
+			lvSensorList.ItemsSource = dsItem;
+			
+			//------ parse beams
+			string[][] bIds = new string[str.Length - 1][];
+			for(int i = 0; i < str.Length - 1; i++)
+				bIds[i] = idsFromString(str[i + 1]);
+			
+			//----- beam titles ------
+			for(int i = 1; i < str.Length; i++)
+			{
+				string s = str[i].Replace(str[i].Substring(0, str[i].IndexOf("Title")), "");
+				beamTitle[i-1] = s.Substring(8, s.IndexOf("\",") - 8);
+			}
+			
+			//--- create beam colections ---
+			for(int k = 0; k < bIds.Length; k++)
+			{
+				CreateBeam();
+				for(int i = 0; i < bIds[k].Length; i++)
+				{
+					for(int a = 0; a < dsItem.Count; a++)
+					{
+						if(dsItem[a].id.Equals(bIds[k][i]) || bIds[k][i] == "")
+						{							
+							beam[k].Add(dsItem[a]);							
+						}
+					}
+				}
+				beamCntr++;
+			}	
+			dispatcherTimer.Start();
+		}
+		//==================================================================
+		string [] idsFromString(string tmp)
+		{
+			tmp = tmp.Replace(tmp.Substring(0, 1 + tmp.IndexOf('[')), "");
+			tmp = tmp.Replace(tmp, tmp.Substring(0, tmp.IndexOf(']')));
+			
+			int comaCntr = 0;
+			for(int i = 0; i < tmp.Length; i++)
+				if(tmp[i].Equals('"')) comaCntr++;
+			comaCntr /= 2;
+			
+			string [] globalid = new string[comaCntr];
+			if(comaCntr > 0)
+			{
+				//globalid = new string[comaCntr];
+				for(int i = 0; i < comaCntr; i++)
+				{
+					if(i == comaCntr - 1)
+					{
+						globalid[i] = tmp;
+						globalid[i] = globalid[i].Replace("\"", "");
+						globalid[i] = globalid[i].Replace(",", "");
+					}
+					else
+					{
+						int a =  tmp.IndexOf(',');
+						globalid[i] = tmp.Substring(0, 1 + a);						
+						tmp = tmp.Substring(1 + a, tmp.Length - 1 - a);//tmp.Replace(globalid[i], "");
+						globalid[i] = globalid[i].Replace("\"", "");
+						globalid[i] = globalid[i].Replace(",", "");
+					}
+				}				
+			}
+			//else return null;
+			return globalid;
+		}
 		//==================================================================
 		ColumnDefinition [] gridCol = new ColumnDefinition[MAX_BEAM_COUNT];		
 		ColumnDefinition [] gridColTitle = new ColumnDefinition[MAX_BEAM_COUNT];
 		TextBox [] tbTitle = new TextBox[MAX_BEAM_COUNT];
+		string [] beamTitle = new string[MAX_BEAM_COUNT];
 		//==================================================================
 		void addTitles()
 		{
 			gridColTitle[beamCntr] = new ColumnDefinition();
 			gTitles.ColumnDefinitions.Add(gridColTitle[beamCntr]);
 			tbTitle[beamCntr] = new TextBox();
-			tbTitle[beamCntr].Text = "qwerty";
+			tbTitle[beamCntr].Text = beamTitle[beamCntr];
 			tbTitle[beamCntr].HorizontalContentAlignment = HorizontalAlignment.Center;
 			tbTitle[beamCntr].VerticalContentAlignment   = VerticalAlignment.Center;
 			tbTitle[beamCntr].BorderThickness = new Thickness(0);
@@ -111,7 +237,6 @@ namespace TemperatureMap
 			tbTitle[beamCntr].Background = Brushes.DarkBlue;
 			tbTitle[beamCntr].FontSize = 15;
 			tbTitle[beamCntr].Foreground = Brushes.WhiteSmoke;
-			//tbTitle[beamCntr].Cor
 			Grid.SetColumn(tbTitle[beamCntr], beamCntr);
 			gTitles.Children.Add(tbTitle[beamCntr]);
 		}
@@ -254,7 +379,7 @@ namespace TemperatureMap
 			}
 
 			public String id    { get; set; }
-			//public String tvalue { get; set; }
+			
 			public string _tvalue;
 			public string tvalue
 			{

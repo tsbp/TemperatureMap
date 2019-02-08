@@ -34,8 +34,8 @@
 					Width="Auto"
 					HorizontalAlignment="Stretch"
 					Margin="0,5,0,0"
-					x:Name="bChange"
-					Click="bChange_Click" />
+					x:Name="bLoad"
+					Click="bLoad_Click" />
 				<Button
 					Content="Save"
 					Height="30"
@@ -52,6 +52,14 @@
 					Margin="0,5,0,0"
 					x:Name="bCreate"
 					Click="bCreate_Click" />
+				<Button					
+					Content="Change"
+					Height="30"
+					Width="Auto"
+					HorizontalAlignment="Stretch"
+					Margin="0,5,0,0"
+					x:Name="bChange"
+					Click="bChange_Click" />
 				<TextBox
 					Name="lb"					
 					VerticalAlignment="Center"
@@ -99,12 +107,13 @@
 										Grid.Column="1"
 										BorderBrush="Green"
 										BorderThickness="2"
+										Background="#00f"
 										CornerRadius="8">
 										<Label
 											HorizontalAlignment="Center"
-											VerticalAlignment="Center"
+											VerticalAlignment="Center"											
 											Content="{Binding tvalue}"
-											Foreground="Black" />
+											Foreground="White" />
 									</Border>
 								</Grid>
 							</Border>
