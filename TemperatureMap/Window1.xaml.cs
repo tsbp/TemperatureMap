@@ -68,9 +68,19 @@ namespace TemperatureMap
 		//==================================================================
 		void dispatcherTimer_Tick(object sender, EventArgs e)
 		{
-			tick++;
+			if(tick < 20) tick++;
+			else tick = 0;
+			
 			for(int i = 0; i < dsItem.Count; i++)
-				dsItem[i].tvalue = "" + (tick + i).ToString();
+			{
+				int a = (tick + i);
+				dsItem[i].tvalue = "" + a;
+				
+				if      (a <  int.Parse(tbNorm.Text))  dsItem[i].tcolor = "#0f0";
+				else if (a <  int.Parse(tbAtten.Text)) dsItem[i].tcolor = "#ff0";
+				else if (a >= int.Parse(tbAlr.Text))   dsItem[i].tcolor = "#f00";  
+				
+			}
 		}
 		//==================================================================
 		void bCreate_Click(object sender, RoutedEventArgs e)
@@ -81,11 +91,7 @@ namespace TemperatureMap
 				beamCntr++;
 			}
 		}	
-		//==================================================================
-		void bChange_Click(object sender, RoutedEventArgs e)
-		{			
-			dsItem[2].tvalue = lb.Text;
-		}	
+		
 		//==================================================================
 		void bJson_Click(object sender, RoutedEventArgs e)
 		{
@@ -149,7 +155,7 @@ namespace TemperatureMap
 			string []gIds = idsFromString(str[0]);
 			
 			for(int i = 0; i < gIds.Length; i++)
-				dsItem.Add(new ItemData(gIds[i], "23.8"));
+				dsItem.Add(new ItemData(gIds[i], "23.8", "#0f0"));
 			lvSensorList.ItemsSource = dsItem;
 			
 			//------ parse beams
@@ -283,10 +289,15 @@ namespace TemperatureMap
              stack.SetValue(MarginProperty, new Thickness(5));
              stack.AppendChild(textID);
              stack.AppendChild(textValue); 
+             
+             Binding bindingColor = new Binding();
+             bindingColor.Path = new PropertyPath("tcolor");
 
              FrameworkElementFactory border = new FrameworkElementFactory(typeof(Border));
-             border.SetValue(BackgroundProperty, Brushes.LightYellow);
-             border.SetValue(BorderBrushProperty, Brushes.Brown);
+             border.SetValue(Border.BackgroundProperty, bindingColor);//Brushes.LightYellow);
+             
+             
+             border.SetValue(BorderBrushProperty, Brushes.Orange);
              border.SetValue(BorderThicknessProperty, new Thickness(3));
              border.SetValue(Border.CornerRadiusProperty, new CornerRadius(20));
              border.SetValue(MarginProperty, new Thickness(1));
@@ -372,14 +383,15 @@ namespace TemperatureMap
 		//==================================================================
 		public class ItemData : INotifyPropertyChanged
 		{
-			public ItemData(String aId, String aVal)
+			public ItemData(string aId, string aVal, string aColor)
 			{
 				id = aId;
 				tvalue = aVal;
+				tcolor = aColor;
 			}
 
-			public String id    { get; set; }
-			
+			public string id    { get; set; }
+			//-----------------------------------------------------------
 			public string _tvalue;
 			public string tvalue
 			{
@@ -391,6 +403,19 @@ namespace TemperatureMap
 						PropertyChanged(this, new PropertyChangedEventArgs("tvalue"));
 				}
 			}
+			//-----------------------------------------------------------
+			public string _tcolor;
+			public string tcolor
+			{
+				get                	{ return _tcolor;}
+				set
+				{
+					_tcolor = value;
+					if (PropertyChanged != null)
+						PropertyChanged(this, new PropertyChangedEventArgs("tcolor"));
+				}
+			}
+			//-----------------------------------------------------------
 			public event PropertyChangedEventHandler PropertyChanged;
 			
 		}
