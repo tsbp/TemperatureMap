@@ -45,7 +45,7 @@ namespace TemperatureMap
 		Point startPoint;
 		ListView []listBox = new ListView[MAX_BEAM_COUNT];
 		
-		string [] temps = {"123", "234", "456", "567", "678","789", "890", };
+		string [] temps = {"1", "1", "1", "1", "1","1", "1", };
 		string [] jsonBeam = new string[MAX_BEAM_COUNT];
 		
 		DispatcherTimer dispatcherTimer;
@@ -61,7 +61,13 @@ namespace TemperatureMap
 			dispatcherTimer = new DispatcherTimer();
 			dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
 			dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1000);//new TimeSpan(0, 0, 1);
-//			dispatcherTimer.Start();			
+//			dispatcherTimer.Start();	
+			
+			//--------- Srial port -------------------
+			string [] myPort;			
+			myPort = System.IO.Ports.SerialPort.GetPortNames();
+			cbPort.ItemsSource = myPort;
+			cbPort.SelectedIndex = 0;			
 		}
 		//==================================================================
 		int tick = 0;
@@ -76,12 +82,21 @@ namespace TemperatureMap
 				int a = (tick + i);
 				dsItem[i].tvalue = "" + a;
 				
-				if      (a <  int.Parse(tbNorm.Text))  dsItem[i].tcolor = "#0f0";
-				else if (a <  int.Parse(tbAtten.Text)) dsItem[i].tcolor = "#ff0";
-				else if (a >= int.Parse(tbAlr.Text))   dsItem[i].tcolor = "#f00";  
-				
+				if      (a <  int.Parse(tbAtten.Text)) dsItem[i].tcolor = "#0f0";
+				else if (a <  int.Parse(tbAlr.Text))   dsItem[i].tcolor = "#ff0";
+				else                                   dsItem[i].tcolor = "#f00"; 		
 			}
 		}
+		
+		//==================================================================
+		void bSearch_Click(object sender, RoutedEventArgs e)
+		{		
+			for(int i = 0; i < 7; i++)
+				dsItem.Add(new ItemData(i + ".DS", temps[i], "#fff"));
+			lvSensorList.ItemsSource = dsItem;
+			dispatcherTimer.Start();
+		}	
+		
 		//==================================================================
 		void bCreate_Click(object sender, RoutedEventArgs e)
 		{			
@@ -134,9 +149,7 @@ namespace TemperatureMap
 		{				
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			if(openFileDialog.ShowDialog() == true)
-				cfgString = File.ReadAllText(openFileDialog.FileName);
-			
-			
+				cfgString = File.ReadAllText(openFileDialog.FileName);			
 			
 			//---- strings count ------
 			int bCntr = 0;
@@ -150,6 +163,7 @@ namespace TemperatureMap
 				str[i] = cfgString.Substring(0, 1 + cfgString.IndexOf('\n'));
 				cfgString = cfgString.Replace(str[i],"");
 			}
+			
 			//----- parse Global -------
 			string tmp = str[0];
 			string []gIds = idsFromString(str[0]);
@@ -248,12 +262,27 @@ namespace TemperatureMap
 		}
 		
 		//==================================================================
+		private void itemDobleClick(object sender, MouseButtonEventArgs e)
+        {
+			ListView s = (ListView)sender;
+			int a = s.SelectedIndex;
+			string n = s.Name;
+			
+			int curBeam;
+			for(curBeam = 0; curBeam < beamCntr; curBeam++)
+				if(n.Equals(listBox[curBeam].Name))
+			{
+				beam[curBeam].RemoveAt(a);
+				break;
+			}						
+        }
+		
+		//==================================================================
 		void  CreateBeam()
 		{
 			 addTitles();
 			 gridCol[beamCntr] = new ColumnDefinition();;
-			 stPanel.ColumnDefinitions.Add(gridCol[beamCntr]);		
-			
+			 stPanel.ColumnDefinitions.Add(gridCol[beamCntr]);				
 			
 			 listBox[beamCntr] = new ListView();
 			 listBox[beamCntr].Name = "lvBeam" + beamCntr;
@@ -265,6 +294,7 @@ namespace TemperatureMap
              listBox[beamCntr].Drop += lbTwo_Drop;   
              listBox[beamCntr].BorderThickness = new Thickness(0);
              listBox[beamCntr].Background = Brushes.SteelBlue;
+             listBox[beamCntr].MouseDoubleClick += itemDobleClick;
 
              DataTemplate dt = new DataTemplate();
              Binding bindingID = new Binding();
@@ -372,8 +402,7 @@ namespace TemperatureMap
 				ItemData item = (ItemData)listView.ItemContainerGenerator.ItemFromContainer(listViewItem);
 				if (item == null) return;                   // Abort
 				// Initialize the drag & drop operation
-				int startIndex = listView.SelectedIndex;			
-				
+				int startIndex = listView.SelectedIndex;					
 				
 				DataObject dragData = new DataObject();
 				dragData.SetData("ItemData", item);
